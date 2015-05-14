@@ -1,0 +1,7 @@
+
+<div>
+    <input type="text" placeholder="Name" ng-model="name"/>
+    <input type="number" placeholder="Starting credit" min="0" max="100" ng-model="credit"/>
+
+    <qr-scanner ng-show="name&&credit" width="400" height="300" ng-success="signup(data)" ng-error="onError(error)" />
+</div>
