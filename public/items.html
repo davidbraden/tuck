@@ -1,0 +1,13 @@
+<div ng-if="notification">
+    {{notification}}
+</div>
+
+<div>
+    <div class="">
+        <button class="btn btn-default" ng-repeat="item in items" ng-click="addItem(item)">{{item.name}} ({{item.price * 100}}p)</button>
+    </div>
+
+    <a class="btn btn-success" href="#/purchase">Purchase</a>
+
+    <button class="btn btn-warning" ng-click="clear()">Clear</button>
+</div>

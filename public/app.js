@@ -31,9 +31,22 @@ tuckApp.config(['$routeProvider',
 			});
 	}]);
 
-angular.module('tuckApp').controller('NewUserCtrl',
-	['$scope', '$location', 'spreadsheetService',
-		function($scope, $location, spreadsheetService) {
+angular.module('tuckApp').controller('AppCtrl', function ($scope, $location, spreadsheetService, $timeout) {
+
+	$scope.showNotification = function (message) {
+		$scope.notification = message;
+		$timeout(function () {
+			$scope.notification = '';
+		}, 1500);
+	}
+});
+
+angular.module('tuckApp').controller('NewUserCtrl', function ($scope, $location, spreadsheetService) {
+
+	$scope.scan = false;
+	$scope.startScan = function () {
+		$scope.scan = true;
+	};
 
 	$scope.signup = function (data) {
 		var user = {
@@ -42,23 +55,57 @@ angular.module('tuckApp').controller('NewUserCtrl',
 			"credit": $scope.credit
 		};
 		spreadsheetService.createUser(user);
+		$scope.showNotification("User " + user.name + " created");
 		$location.path('/');
 	}
-}]);
+});
 
-angular.module('tuckApp').controller('PurchaseCtrl', function ($scope) {
+angular.module('tuckApp').controller('PurchaseCtrl', function ($scope, cartService, spreadsheetService, $location) {
+
+	$scope.cartItems = cartService.getItems();
+
+	$scope.total = 0;
+	for (var i = 0; i < $scope.cartItems.length; i++) {
+		$scope.total += $scope.cartItems[i].price;
+	}
+	$scope.scan = false;
+	$scope.startScan = function () {
+		$scope.scan = true;
+	};
+
+	$scope.purchase = function (id) {
+		spreadsheetService.purchase(id, $scope.cartItems);
+		$scope.showNotification("Purchase complete");
+		cartService.empty();
+		$location.path('/');
+	}
+});
+
+angular.module('tuckApp').controller('MainCtrl', function ($scope, cartService, spreadsheetService, $location) {
 
 });
 
-angular.module('tuckApp').controller('MainCtrl', function ($scope) {
+angular.module('tuckApp').controller('ItemsCtrl', function ($scope, cartService, spreadsheetService, $location) {
 
+	$scope.items = spreadsheetService.loadItems();
+	$scope.cartItems = cartService.getItems();
+
+	$scope.addItem = function (item) {
+		$scope.showNotification(item.name + " added");
+		cartService.addItem(item);
+	};
+
+	$scope.clear = function () {
+		$scope.showNotification("Cart emptied");
+		cartService.clear();
+	}
 });
 
-angular.module('tuckApp').controller('ItemsCtrl', function ($scope) {
+angular.module('tuckApp').controller('UserDetailsCtrl', function ($scope, cartService, spreadsheetService, $location) {
 
-});
-
-angular.module('tuckApp').controller('UserDetailsCtrl', function ($scope) {
+	$scope.lookup = function (id) {
+		$scope.user = spreadsheetService.getUserDetails(id);
+	}
 
 });
 

@@ -1,0 +1,7 @@
+
+<qr-scanner ng-show="!user" width="400" height="300" ng-success="lookup(data)" ng-error="onError(error)" ></qr-scanner>
+
+<div ng-show="user">
+    {{user.name}} - {{user.id}}
+    &#163;{{user.credit}}
+</div>

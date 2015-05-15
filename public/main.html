@@ -1,13 +1,9 @@
-<div>
-	<ul>
-		<li>
-			<a href="#/items">Purchase</a>
-		</li>
-		<li>
-			<a href="#/newUser">Create new user</a>
-		</li>
-		<li>
-			<a href="#/userDetails">User details</a>
-		</li>
-	</ul>
+<div ng-if="notification">
+    {{notification}}
+</div>
+
+<div class="btn-group">
+    <a class="btn btn-success" href="#/items">Purchase</a>
+    <a class="btn btn-primary" href="#/newUser">Create new user</a>
+    <a class="btn bg-info" href="#/userDetails">User details</a>
 </div>

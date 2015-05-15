@@ -1,0 +1,13 @@
+<div>
+    <ul>
+        <li ng-repeat="item in cartItems track by $index">
+            {{item.name}}: {{item.price}}
+        </li>
+    </ul>
+
+    <div>&#163;{{total}}</div>
+
+    <button class="btn btn-info" ng-show="!scan" ng-click="startScan()">Scan</button>
+
+    <qr-scanner ng-show="scan" width="400" height="300" ng-success="purchase(data)" ng-error="onError(error)" />
+</div>
