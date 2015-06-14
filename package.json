@@ -7,7 +7,10 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "~4.9.x"
+    "express": "~4.9.x",
+    "googleapis": "^2.0.5",
+    "http-proxy": "^1.11.1",
+    "hogan-express": "~0.5.2"
   },
   "engines": {
     "node": "0.12.2"

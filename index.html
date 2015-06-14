@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="tuckApp" ng-controller="AppCtrl">
+<html ng-app="tuckApp" ng-controller="AppCtrl" data-token="{{token}}">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -10,6 +10,7 @@
 
         <script src="app.js"></script>
         <script src="spreadsheetService.js"></script>
+        <script src="sheetsApi.js"></script>
         <script src="cartService.js"></script>
 
         <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -17,7 +18,6 @@
         <link rel="stylesheet" href="css/styles.css">
     </head>
     <body>
-
         <div ng-view class="container"></div>
 
     </body>
