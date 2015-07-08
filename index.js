@@ -9,7 +9,7 @@ var oauth2Client = new google.auth.OAuth2(
     homeUrl);
 
 var app = express();
-httpProxy.createProxyServer({ target: 'https://spreadsheets.google.com', changeOrigin:true}).listen(5001);
+var proxy = httpProxy.createProxyServer();
 
 
 app.use(express.static(__dirname + '/public'));
@@ -18,11 +18,15 @@ app.set('port', (process.env.PORT || 5000));
 app.set('view engine', 'html');
 app.engine('html', require('hogan-express'));
 
-app.get('/', function(request, response) {
+app.all('/feeds/*', function(request, response) {
+  proxy.web(request, response, { target: 'https://spreadsheets.google.com', changeOrigin:true});
+});
+
+
+app.get('/*', function(request, response) {
   if (request.query.code) {
     oauth2Client.getToken(request.query.code, function(err, tokens) {
       if(!err) {
-        console.log(tokens);
         var model = {};
         model.token = tokens.access_token;
         response.render(__dirname + '/index.html', model);

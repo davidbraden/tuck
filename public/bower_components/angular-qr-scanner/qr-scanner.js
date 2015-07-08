@@ -26,14 +26,59 @@ angular.module('qrScanner', ["ng"]).directive('qrScanner', ['$interval', '$windo
       canvas.setAttribute('id', 'qr-canvas');
       canvas.setAttribute('width', width);
       canvas.setAttribute('height', height);
-      canvas.setAttribute('style', 'display:none;'); 
+      canvas.setAttribute('style', 'display:none;');
+
+      var videoToggle = $window.document.createElement('button');
+      videoToggle.innerText = "Cycle cameras";
+      videoToggle.addEventListener("click", cycleCameras, false);
     
       angular.element(element).append(video);
       angular.element(element).append(canvas);
+      angular.element(element).append(videoToggle);
       var context = canvas.getContext('2d'); 
       var stopScan;
+      var videoSources = [];
+      var index = 0;
+
+      MediaStreamTrack.getSources(function(sourceInfos) {
+        var videoSources = [];
+
+        for (var i = 0; i != sourceInfos.length; ++i) {
+          var sourceInfo = sourceInfos[i];
+          if (sourceInfo.kind === 'video') {
+
+            videoSources.push(sourceInfo.id);
+          }
+        }
+
+        var sourceId = videoSources[0];
+
+        startCamera(sourceId)
+      });
+
+      function cycleCameras() {
+        if (videoSources) {
+          index = index + 1 % videoSources.length;
+          console.log(videoSources[index]);
+          startCamera(videoSources[index]);
+        }
+      }
+
+      function startCamera(sourceId) {
+        if (navigator.getUserMedia) {
+          navigator.getUserMedia({
+            video: {
+              optional: [{sourceId: sourceId}]
+            }
+          }, successCallback, function(e) {
+            scope.ngVideoError({error: e});
+          });
+        } else {
+          scope.ngVideoError({error: 'Native web camera streaming (getUserMedia) not supported in this browser.'});
+        }
+      }
     
-      var scan = function() {
+      function scan() {
         if ($window.localMediaStream) {
           context.drawImage(video, 0, 0, 307,250);
           try {
@@ -44,21 +89,12 @@ angular.module('qrScanner', ["ng"]).directive('qrScanner', ['$interval', '$windo
         }
       }
 
-      var successCallback = function(stream) {
+      function successCallback(stream) {
         video.src = (window.URL && window.URL.createObjectURL(stream)) || stream;
         $window.localMediaStream = stream;
 
         scope.video = video;
         stopScan = $interval(scan, 500);
-      }
-
-      // Call the getUserMedia method with our callback functions
-      if (navigator.getUserMedia) {
-        navigator.getUserMedia({video: true}, successCallback, function(e) {
-          scope.ngVideoError({error: e});
-        });
-      } else {
-        scope.ngVideoError({error: 'Native web camera streaming (getUserMedia) not supported in this browser.'});
       }
 
       qrcode.callback = function(data) {

@@ -31,7 +31,10 @@ tuckApp.config(['$routeProvider',
 			});
 	}]);
 
-angular.module('tuckApp').controller('AppCtrl', function ($scope, $location, spreadsheetService, $timeout) {
+angular.module('tuckApp').controller('AppCtrl', function ($http, $scope, $location, spreadsheetService, $timeout) {
+	var token = document.getElementsByTagName("html")[0].getAttribute("data-token");
+	$http.defaults.headers.common.Authorization = 'Bearer ' + token;
+	$http.defaults.headers.post["Content-Type"] = "application/atom+xml;";
 
 	$scope.showNotification = function (message) {
 		$scope.notification = message;
@@ -46,6 +49,14 @@ angular.module('tuckApp').controller('NewUserCtrl', function ($scope, $location,
 	$scope.scan = false;
 	$scope.startScan = function () {
 		$scope.scan = true;
+	};
+
+	$scope.createTmp = function() {
+		var user = {
+			"name" : "test123",
+			"credit" : 10
+		};
+		spreadsheetService.createUser(user)
 	};
 
 	$scope.signup = function (data) {
@@ -104,7 +115,9 @@ angular.module('tuckApp').controller('ItemsCtrl', function ($scope, cartService,
 angular.module('tuckApp').controller('UserDetailsCtrl', function ($scope, cartService, spreadsheetService, $location) {
 
 	$scope.lookup = function (id) {
-		$scope.user = spreadsheetService.getUserDetails(id);
+		spreadsheetService.getUserDetails(id).then(function(user) {
+			$scope.user = user;
+		});
 	}
 
 });

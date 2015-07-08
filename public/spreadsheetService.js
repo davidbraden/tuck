@@ -1,4 +1,4 @@
-angular.module('tuckApp').factory('spreadsheetService', function ($http) {
+angular.module('tuckApp').factory('spreadsheetService', function (sheetsApi) {
 		var spreadsheetService = {};
 
 		var users = [];
@@ -6,25 +6,17 @@ angular.module('tuckApp').factory('spreadsheetService', function ($http) {
 		spreadsheetService.createUser = function (user) {
 			console.log("Creating user: " + user.name + " - " + user.id + " with credit " + user.credit);
 
-			for (var i = 0; i < users.length; i++) {
-				if (users[i].id === user.id) {
-					throw Error("User exists");
-				}
-			}
-			users.push(user);
+			sheetsApi.save("user", {
+				"name" : user.name,
+				"initial_credit" : user.credit
+			});
 
 		};
 
 		spreadsheetService.getUserDetails = function (userId) {
 			console.log("Getting user details for user: " + userId);
 
-			for (var i = 0; i < users.length; i++) {
-				if (users[i].id === userId) {
-					return users[i];
-				}
-			}
-
-			throw Error("User not found");
+			return sheetsApi.get("user", userId);
 		};
 
 		spreadsheetService.purchase = function (userId, items) {
